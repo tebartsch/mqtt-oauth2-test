@@ -35,7 +35,7 @@ docker run --rm -it -p 1883:1883 \
 
 
 
-# Test the setup
+## Test the setup
 
 Store a file `mqtt-passwords.conf` containing
 ```

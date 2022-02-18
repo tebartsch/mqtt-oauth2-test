@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+    keycloak-db:
+        image: postgres:13-alpine
+        environment:
+            - "POSTGRES_DB=keycloak"
+            - "POSTGRES_USER=keycloak"
+            - "POSTGRES_PASSWORD=password"
+        # volumes:
+        #    - "./data:/var/lib/postgresql/data"
+        networks:
+            - net
+
+    keycloak:
+        image: jboss/keycloak:16.1.0
+        depends_on:
+            - keycloak-db
+        ports:
+            - 7070:8080
+        environment:
+            - PROXY_ADDRESS_FORWARDING=true
+            - DB_VENDOR=POSTGRES
+            - DB_ADDR=keycloak-db
+            - DB_DATABASE=keycloak
+            - DB_USER=keycloak
+            - DB_PASSWORD=password
+            - KEYCLOAK_USER=admin
+            - KEYCLOAK_PASSWORD=admin
+            # This environment variable is necessary when a token is verified from a different host than it has been issued to
+            # (i.e. 127.0.0.1, localhost, ...)
+            - KEYCLOAK_FRONTEND_URL=http://127.0.0.1:7070/auth # https://stackoverflow.com/questions/61966384/keycloak-invalid-token-issuer
+        networks:
+            - net
+
+
+
+networks:
+    net:
